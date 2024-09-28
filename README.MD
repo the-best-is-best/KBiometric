@@ -1,45 +1,67 @@
-# Compose Multiplatform Application
+<h1 align="center">KBiometric</h1><br>
+<div align="center">
+<a href="https://opensource.org/licenses/Apache-2.0"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"/></a>
+<a href="https://android-arsenal.com/api?level=21" rel="nofollow">
+    <img alt="API" src="https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat" style="max-width: 100%;">
+</a>
+  <img src="https://img.shields.io/badge/Platform-Android-brightgreen.svg?logo=android" alt="Badge Android" />
+  <img src="https://img.shields.io/badge/Platform-iOS%20%2F%20macOS-lightgrey.svg?logo=apple" alt="Badge iOS" />
 
-## Before running!
+<a href="https://github.com/the-best-is-best/"><img alt="Profile" src="https://img.shields.io/badge/github-%23181717.svg?&style=for-the-badge&logo=github&logoColor=white" height="20"/></a>
+</div>
 
-- check your system with [KDoctor](https://github.com/Kotlin/kdoctor)
-- install JDK 17 or higher on your machine
-- add `local.properties` file to the project root and set a path to Android SDK there
+### This package for Android and iOS devices to allow local authentication via fingerprint or touch ID
 
-### Android
+<hr>
 
-To run the application on android device/emulator:
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.the-best-is-best/kbiometric)](https://central.sonatype.com/artifact/io.github.the-best-is-best/kbiometric)
 
-- open project in Android Studio and run imported android run configuration
+KApp Auth is available on `mavenCentral()`.
 
-To build the application bundle:
+```kotlin
+implementation("io.github.the-best-is-best:kbiometric:1.0.0")
+```
 
-- run `./gradlew :composeApp:assembleDebug`
-- find `.apk` file in `composeApp/build/outputs/apk/debug/composeApp-debug.apk`
-  Run android simulator UI tests: `./gradlew :composeApp:pixel5Check`
+## Need add this in pod file if not exist run ` pod init `
 
-### Desktop
+```swift
+pod 'BiometricAuthentication' , '3.1.3'
+```
 
-Run the desktop application: `./gradlew :composeApp:run`
-Run desktop UI tests: `./gradlew :composeApp:jvmTest`
+## How to use it
 
-### iOS
+### First in androidMain
 
-To run the application on iPhone device/simulator:
+<br>
 
-- Open `iosApp/iosApp.xcproject` in Xcode and run standard configuration
-- Or
-  use [Kotlin Multiplatform Mobile plugin](https://plugins.jetbrains.com/plugin/14936-kotlin-multiplatform-mobile)
-  for Android Studio
-  Run iOS simulator UI tests: `./gradlew :composeApp:iosSimulatorArm64Test`
+```kotlin
+AndroidBiometricPromptManager.init(this, "Demo App Auth", "Demo Biometric")
+```
 
-### JS Browser (Experimental)
+### in commonMain
 
-Run the browser application: `./gradlew :composeApp:jsBrowserDevelopmentRun --continue`
-Run browser UI tests: `./gradlew :composeApp:jsBrowserTest`
+```kotlin
+val scope = rememberCoroutineScope()
+var label by remember { mutableStateOf("Please auth first") }
 
-### Wasm Browser (Alpha)
+val kBiometric = KBiometric()
 
-Run the browser application: `./gradlew :composeApp:wasmJsBrowserDevelopmentRun --continue`
-Run browser UI tests: `./gradlew :composeApp:wasmJsBrowserTest`
+scope.launch {
+    kBiometric.auth { result ->
+        result.onSuccess {
+            label = when (it) {
+                is BiometricResult.AuthenticationError -> it.error
+                BiometricResult.AuthenticationFailed -> "Auth failed"
+                BiometricResult.AuthenticationNotSet -> "Auth not set"
+                BiometricResult.AuthenticationSuccess -> "Auth success"
+                BiometricResult.FeatureUnavailable -> "Feature unavailable"
+                BiometricResult.HardwareUnavailable -> "Hardware unavailable"
+            }
+        }.onFailure {
+            label = "Failure"
+        }
+    }
 
+}
+
+```

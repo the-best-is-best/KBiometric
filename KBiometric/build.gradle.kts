@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.compose)
     alias(libs.plugins.android.library)
+    alias(libs.plugins.native.cocoapods)
     id("maven-publish")
     id("signing")
     alias(libs.plugins.maven.publish)
@@ -115,6 +116,7 @@ kotlin {
 //        binaries.executable()
 //    }
 
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -124,6 +126,29 @@ kotlin {
             baseName = "KBiometric"
             isStatic = true
         }
+    }
+
+    cocoapods {
+        version = "1.0"
+        summary = "Some description for a Kotlin/Native module"
+        homepage = "Link to a Kotlin/Native module homepage"
+
+        // Optional properties
+        // Configure the Pod name here instead of changing the Gradle project name
+        name = "KBiometric"
+
+        framework {
+            baseName = "KBiometric"
+        }
+        noPodspec()
+        ios.deploymentTarget = "12.0"  // Adjust this version to match KServices
+
+        pod("BiometricAuthentication") {
+            version = "3.1.3"
+            extraOpts += listOf("-compiler-option", "-fmodules")
+
+        }
+
     }
 
     sourceSets {

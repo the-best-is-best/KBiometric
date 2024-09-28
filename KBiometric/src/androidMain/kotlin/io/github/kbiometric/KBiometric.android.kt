@@ -5,6 +5,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import io.github.kbiometric.AndroidBiometricPromptManager.activity
 import io.github.kbiometric.AndroidBiometricPromptManager.authenticators
+import io.github.kbiometric.AndroidBiometricPromptManager.promptInfo
 
 actual class KBiometric {
 
@@ -36,14 +37,6 @@ actual class KBiometric {
                 return
             }
         }
-
-        // Ensure `activity` is valid
-        if (activity == null) {
-            println("Error: Activity is null. Cannot start biometric authentication.")
-            callback(Result.success(BiometricResult.FeatureUnavailable))
-            return
-        }
-
         // Create BiometricPrompt
         val prompt = BiometricPrompt(
             activity,
@@ -69,20 +62,8 @@ actual class KBiometric {
             }
         )
 
-        // Create PromptInfo
-        val promptInfoBuilder = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Authentication Required")
-            .setSubtitle("Please authenticate using your biometrics or device credentials")
-            .setDescription("This app requires authentication for access")
-            .setAllowedAuthenticators(authenticators)
-
-        // Only set the negative button if DEVICE_CREDENTIAL is not used
-        if ((authenticators and BiometricManager.Authenticators.DEVICE_CREDENTIAL) == 0) {
-            promptInfoBuilder.setNegativeButtonText("Cancel")
-        }
 
         // Build the PromptInfo
-        val promptInfo = promptInfoBuilder.build()
 
         // Start authentication
         println("Starting biometric authentication...")
