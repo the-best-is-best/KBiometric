@@ -20,6 +20,28 @@ KApp Auth is available on `mavenCentral()`.
 
 ```kotlin
 implementation("io.github.the-best-is-best:kbiometric:1.0.0")
+
+ // u need add
+```
+
+### Install
+
+```toml
+[versions]
+appcompat = "1.7.0"
+....
+[libraries]
+....
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+
+```
+
+```kotlin
+    androidMain.dependencies {
+    ....
+    implementation(libs.androidx.appcompat)
+}
+
 ```
 
 ## Need add this in pod file if not exist run ` pod init `
@@ -35,7 +57,14 @@ pod 'BiometricAuthentication' , '3.1.3'
 <br>
 
 ```kotlin
-AndroidBiometricPromptManager.init(this, "Demo App Auth", "Demo Biometric")
+class AppActivity : AppCompatActivity() { // change this
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        AndroidBiometricPromptManager.init(this, "Demo App Auth", "Demo Biometric") // add this
+        setContent { App() }
+    }
+}
 ```
 
 ### in commonMain
